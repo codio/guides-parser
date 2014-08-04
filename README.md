@@ -1,5 +1,6 @@
 # Codio Guides Parser
 
+[![Build Status](https://travis-ci.org/codio/guides-parser.svg?branch=master)](https://travis-ci.org/codio/guides-parser)
 
 ## Usage
 
