@@ -10,7 +10,7 @@ var input = [
   '---',
   'title: Hello world',
   '---',
-  this is me'
+  'this is me'
 ].join('\n');
 
 var result = parser.parse(input);
