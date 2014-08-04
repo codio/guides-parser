@@ -1,0 +1,7 @@
+{
+    "id": "/files",
+    "type": "array",
+    "items": {
+        "$ref": "/file"
+    }
+}

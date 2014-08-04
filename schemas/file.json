@@ -1,0 +1,10 @@
+{
+    "id": "/file",
+    "type": "object",
+    "properties": {
+        "path": { "type": "string", "required": true },
+        "panel": { "type": "number" },
+        "ref": { "type": "number" },
+        "lineCount": { "type": "number" }
+    }
+}

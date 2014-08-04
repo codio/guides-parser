@@ -1,0 +1,10 @@
+{
+    "id": "/config",
+    "type": "object",
+    "properties": {
+        "title": { "$ref": "/title", "required": true },
+        "files": { "$ref": "/files" },
+        "editable": { "$ref": "/editable" },
+        "layout": { "$ref": "/layout" }
+    }
+}
