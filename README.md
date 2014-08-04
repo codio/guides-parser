@@ -25,6 +25,34 @@ var result = parser.parse(input);
 ```
 
 
+## Supported Directives
+
+### `title`
+
+* `required: true`
+* `type: string`
+
+### `files`
+
+* `required: false`
+* `type: array of objects`
+
+### `layout`
+
+* `required: false`
+* `type: string`
+
+### `editable`
+
+* `required: false`
+* `type: boolean`
+
+
+## Examples
+
+See the tests for examples.
+
+
 ## Development
 
 
