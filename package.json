@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha test/*.spec.coffee"
+    "test": "./node_modules/mocha/bin/mocha test/*.spec.coffee",
+    "build": "node_modules/.bin/browserify -s guides-parser -o build/guides-parser.js -t brfs -e index.js"
   },
   "author": "Codio",
   "license": "MIT",

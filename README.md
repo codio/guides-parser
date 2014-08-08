@@ -56,6 +56,13 @@ See the tests for examples.
 
 ## Development
 
+### Build
+
+```bash
+$ npm run build
+```
+
+### Tests
 
 Run test suite.
 
