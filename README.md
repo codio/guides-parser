@@ -61,4 +61,5 @@ Run test suite.
 
 ```bash
 $ npm test
+$ karma start --single-run
 ```
