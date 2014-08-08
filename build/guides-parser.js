@@ -2,36 +2,51 @@
 // Guides Parser
 // =============
 
-
+'use strict';
 
 module.exports = _dereq_('./lib/parser');
 
-},{"./lib/parser":2}],2:[function(_dereq_,module,exports){
+},{"./lib/parser":3}],2:[function(_dereq_,module,exports){
+// Extractor
+// =========
+
+'use strict';
+
+// Split a string into front matter and content part.
+//
+// input - String
+//
+// Returns an object with keys
+// frontMatter - String
+// body        - String
+function extractFrontMatter(input) {
+    var re = /^(-{3}(?:\n|\r)([\w\W]+?)-{3})?([\w\W]*)*/;
+    var result = re.exec(input);
+
+
+    return {
+        frontMatter: result[2],
+        body: (result[3] || '').replace(/^\n/, '')
+    };
+}
+
+// Export
+// ------
+
+module.exports = extractFrontMatter;
+
+},{}],3:[function(_dereq_,module,exports){
 // Parser
 // ======
 
+'use strict';
 
 // Dependencies
 // ------------
 
-var _ = _dereq_('lodash');
-
 var yaml = _dereq_('js-yaml');
-var Validator = _dereq_('jsonschema').Validator;
-var validator = new Validator();
-
-// No dynamic loading as browserify doesn't support that yet :(
-var schemas = {
-    config: JSON.parse("{\n    \"id\": \"/config\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"title\": { \"$ref\": \"/title\", \"required\": true },\n        \"files\": { \"$ref\": \"/files\" },\n        \"editable\": { \"$ref\": \"/editable\" },\n        \"layout\": { \"$ref\": \"/layout\" }\n    }\n}\n"),
-    title: JSON.parse("{\n    \"id\": \"/title\",\n    \"type\": \"string\"\n}\n"),
-    file: JSON.parse("{\n    \"id\": \"/file\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"path\": { \"type\": \"string\", \"required\": true },\n        \"panel\": { \"type\": \"number\" },\n        \"ref\": { \"type\": \"number\" },\n        \"lineCount\": { \"type\": \"number\" }\n    }\n}\n"),
-    files: JSON.parse("{\n    \"id\": \"/files\",\n    \"type\": \"array\",\n    \"items\": {\n        \"$ref\": \"/file\"\n    }\n}\n"),
-    layout: JSON.parse("{\n    \"id\": \"/layout\",\n    \"type\": \"string\"\n}\n"),
-    editable: JSON.parse("{\n    \"id\": \"/editable\",\n    \"type\": \"boolean\"\n}\n")
-};
-
-var parser = module.exports = {};
-
+var validate = _dereq_('./validator');
+var extractFrontMatter = _dereq_('./extractor');
 
 // Parse a given string.
 //
@@ -41,7 +56,7 @@ var parser = module.exports = {};
 // Returns an object
 //   header - Object, containing the front matter information.
 //   body   - String, the rest of the original string.
-parser.parse = function (input, filename) {
+function parse (input, filename) {
     var result = {};
 
     // Parsing
@@ -63,21 +78,43 @@ parser.parse = function (input, filename) {
     }
 
     return result;
-};
-
-
-function extractFrontMatter(input) {
-    var re = /^(-{3}(?:\n|\r)([\w\W]+?)-{3})?([\w\W]*)*/;
-    var result = re.exec(input);
-
-
-    return {
-        frontMatter: result[2],
-        body: (result[3] || '').replace(/^\n/, '')
-    };
 }
 
 
+// Export
+// ------
+
+exports.parse = parse;
+
+},{"./extractor":2,"./validator":4,"js-yaml":11}],4:[function(_dereq_,module,exports){
+// Validator
+// =========
+
+'use strict';
+
+// Dependencies
+// ------------
+
+
+var _ = _dereq_('lodash');
+var Validator = _dereq_('jsonschema').Validator;
+var validator = new Validator();
+
+// No dynamic loading as browserify doesn't support that yet :(
+var schemas = {
+    config: JSON.parse("{\n    \"id\": \"/config\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"title\": { \"$ref\": \"/title\", \"required\": true },\n        \"files\": { \"$ref\": \"/files\" },\n        \"editable\": { \"$ref\": \"/editable\" },\n        \"layout\": { \"$ref\": \"/layout\" }\n    }\n}\n"),
+    title: JSON.parse("{\n    \"id\": \"/title\",\n    \"type\": \"string\"\n}\n"),
+    file: JSON.parse("{\n    \"id\": \"/file\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"path\": { \"type\": \"string\", \"required\": true },\n        \"panel\": { \"type\": \"number\" },\n        \"ref\": { \"type\": \"number\" },\n        \"lineCount\": { \"type\": \"number\" }\n    }\n}\n"),
+    files: JSON.parse("{\n    \"id\": \"/files\",\n    \"type\": \"array\",\n    \"items\": {\n        \"$ref\": \"/file\"\n    }\n}\n"),
+    layout: JSON.parse("{\n    \"id\": \"/layout\",\n    \"type\": \"string\"\n}\n"),
+    editable: JSON.parse("{\n    \"id\": \"/editable\",\n    \"type\": \"boolean\"\n}\n")
+};
+
+// Validate an object with the json schemas.
+//
+// header - Object
+//
+// Returns undefined if it's valid or an array of errors.
 function validate(header) {
 
     _.forEach(_.keys(schemas), function (name) {
@@ -93,9 +130,14 @@ function validate(header) {
     }
 }
 
-},{"js-yaml":9,"jsonschema":42,"lodash":44}],3:[function(_dereq_,module,exports){
+// Export
+// ------
 
-},{}],4:[function(_dereq_,module,exports){
+module.exports = validate;
+
+},{"jsonschema":44,"lodash":46}],5:[function(_dereq_,module,exports){
+
+},{}],6:[function(_dereq_,module,exports){
 (function (global){
 /*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
@@ -606,7 +648,7 @@ function validate(header) {
 }(this));
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],5:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -692,7 +734,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -779,13 +821,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 'use strict';
 
 exports.decode = exports.parse = _dereq_('./decode');
 exports.encode = exports.stringify = _dereq_('./encode');
 
-},{"./decode":5,"./encode":6}],8:[function(_dereq_,module,exports){
+},{"./decode":7,"./encode":8}],10:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1494,7 +1536,7 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":4,"querystring":7}],9:[function(_dereq_,module,exports){
+},{"punycode":6,"querystring":9}],11:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -1503,7 +1545,7 @@ var yaml = _dereq_('./lib/js-yaml.js');
 
 module.exports = yaml;
 
-},{"./lib/js-yaml.js":10}],10:[function(_dereq_,module,exports){
+},{"./lib/js-yaml.js":12}],12:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -1544,7 +1586,7 @@ module.exports.parse          = deprecated('parse');
 module.exports.compose        = deprecated('compose');
 module.exports.addConstructor = deprecated('addConstructor');
 
-},{"./js-yaml/dumper":12,"./js-yaml/exception":13,"./js-yaml/loader":14,"./js-yaml/schema":16,"./js-yaml/schema/core":17,"./js-yaml/schema/default_full":18,"./js-yaml/schema/default_safe":19,"./js-yaml/schema/failsafe":20,"./js-yaml/schema/json":21,"./js-yaml/type":22}],11:[function(_dereq_,module,exports){
+},{"./js-yaml/dumper":14,"./js-yaml/exception":15,"./js-yaml/loader":16,"./js-yaml/schema":18,"./js-yaml/schema/core":19,"./js-yaml/schema/default_full":20,"./js-yaml/schema/default_safe":21,"./js-yaml/schema/failsafe":22,"./js-yaml/schema/json":23,"./js-yaml/type":24}],13:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -1608,7 +1650,7 @@ module.exports.repeat         = repeat;
 module.exports.isNegativeZero = isNegativeZero;
 module.exports.extend         = extend;
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -2087,7 +2129,7 @@ function safeDump(input, options) {
 module.exports.dump     = dump;
 module.exports.safeDump = safeDump;
 
-},{"./common":11,"./exception":13,"./schema/default_full":18,"./schema/default_safe":19}],13:[function(_dereq_,module,exports){
+},{"./common":13,"./exception":15,"./schema/default_full":20,"./schema/default_safe":21}],15:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -2114,7 +2156,7 @@ YAMLException.prototype.toString = function toString(compact) {
 
 module.exports = YAMLException;
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -3675,7 +3717,7 @@ module.exports.load        = load;
 module.exports.safeLoadAll = safeLoadAll;
 module.exports.safeLoad    = safeLoad;
 
-},{"./common":11,"./exception":13,"./mark":15,"./schema/default_full":18,"./schema/default_safe":19}],15:[function(_dereq_,module,exports){
+},{"./common":13,"./exception":15,"./mark":17,"./schema/default_full":20,"./schema/default_safe":21}],17:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -3755,7 +3797,7 @@ Mark.prototype.toString = function toString(compact) {
 
 module.exports = Mark;
 
-},{"./common":11}],16:[function(_dereq_,module,exports){
+},{"./common":13}],18:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -3860,7 +3902,7 @@ Schema.create = function createSchema() {
 
 module.exports = Schema;
 
-},{"./common":11,"./exception":13,"./type":22}],17:[function(_dereq_,module,exports){
+},{"./common":13,"./exception":15,"./type":24}],19:[function(_dereq_,module,exports){
 // Standard YAML's Core schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2804923
 //
@@ -3880,7 +3922,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":16,"./json":21}],18:[function(_dereq_,module,exports){
+},{"../schema":18,"./json":23}],20:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `load` function.
 // It is not described in the YAML specification.
 //
@@ -3907,7 +3949,7 @@ module.exports = Schema.DEFAULT = new Schema({
   ]
 });
 
-},{"../schema":16,"../type/js/function":27,"../type/js/regexp":28,"../type/js/undefined":29,"./default_safe":19}],19:[function(_dereq_,module,exports){
+},{"../schema":18,"../type/js/function":29,"../type/js/regexp":30,"../type/js/undefined":31,"./default_safe":21}],21:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `safeLoad` function.
 // It is not described in the YAML specification.
 //
@@ -3937,7 +3979,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":16,"../type/binary":23,"../type/merge":31,"../type/omap":33,"../type/pairs":34,"../type/set":36,"../type/timestamp":38,"./core":17}],20:[function(_dereq_,module,exports){
+},{"../schema":18,"../type/binary":25,"../type/merge":33,"../type/omap":35,"../type/pairs":36,"../type/set":38,"../type/timestamp":40,"./core":19}],22:[function(_dereq_,module,exports){
 // Standard YAML's Failsafe schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2802346
 
@@ -3956,7 +3998,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":16,"../type/map":30,"../type/seq":35,"../type/str":37}],21:[function(_dereq_,module,exports){
+},{"../schema":18,"../type/map":32,"../type/seq":37,"../type/str":39}],23:[function(_dereq_,module,exports){
 // Standard YAML's JSON schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2803231
 //
@@ -3983,7 +4025,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":16,"../type/bool":24,"../type/float":25,"../type/int":26,"../type/null":32,"./failsafe":20}],22:[function(_dereq_,module,exports){
+},{"../schema":18,"../type/bool":26,"../type/float":27,"../type/int":28,"../type/null":34,"./failsafe":22}],24:[function(_dereq_,module,exports){
 'use strict';
 
 var YAMLException = _dereq_('./exception');
@@ -4046,7 +4088,7 @@ function Type(tag, options) {
 
 module.exports = Type;
 
-},{"./exception":13}],23:[function(_dereq_,module,exports){
+},{"./exception":15}],25:[function(_dereq_,module,exports){
 // Modified from:
 // https://raw.github.com/kanaka/noVNC/d890e8640f20fba3215ba7be8e0ff145aeb8c17c/include/base64.js
 
@@ -4189,7 +4231,7 @@ module.exports = new Type('tag:yaml.org,2002:binary', {
   represent: representYamlBinary
 });
 
-},{"../type":22,"buffer":3}],24:[function(_dereq_,module,exports){
+},{"../type":24,"buffer":5}],26:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4224,7 +4266,7 @@ module.exports = new Type('tag:yaml.org,2002:bool', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":22}],25:[function(_dereq_,module,exports){
+},{"../type":24}],27:[function(_dereq_,module,exports){
 'use strict';
 
 var common = _dereq_('../common');
@@ -4332,7 +4374,7 @@ module.exports = new Type('tag:yaml.org,2002:float', {
   defaultStyle: 'lowercase'
 });
 
-},{"../common":11,"../type":22}],26:[function(_dereq_,module,exports){
+},{"../common":13,"../type":24}],28:[function(_dereq_,module,exports){
 'use strict';
 
 var common = _dereq_('../common');
@@ -4513,7 +4555,7 @@ module.exports = new Type('tag:yaml.org,2002:int', {
   }
 });
 
-},{"../common":11,"../type":22}],27:[function(_dereq_,module,exports){
+},{"../common":13,"../type":24}],29:[function(_dereq_,module,exports){
 'use strict';
 
 var esprima;
@@ -4596,7 +4638,7 @@ module.exports = new Type('tag:yaml.org,2002:js/function', {
   represent: representJavascriptFunction
 });
 
-},{"../../type":22,"esprima":39}],28:[function(_dereq_,module,exports){
+},{"../../type":24,"esprima":41}],30:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../../type');
@@ -4674,7 +4716,7 @@ module.exports = new Type('tag:yaml.org,2002:js/regexp', {
   represent: representJavascriptRegExp
 });
 
-},{"../../type":22}],29:[function(_dereq_,module,exports){
+},{"../../type":24}],31:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../../type');
@@ -4703,7 +4745,7 @@ module.exports = new Type('tag:yaml.org,2002:js/undefined', {
   represent: representJavascriptUndefined
 });
 
-},{"../../type":22}],30:[function(_dereq_,module,exports){
+},{"../../type":24}],32:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4712,7 +4754,7 @@ module.exports = new Type('tag:yaml.org,2002:map', {
   kind: 'mapping'
 });
 
-},{"../type":22}],31:[function(_dereq_,module,exports){
+},{"../type":24}],33:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4726,7 +4768,7 @@ module.exports = new Type('tag:yaml.org,2002:merge', {
   resolve: resolveYamlMerge,
 });
 
-},{"../type":22}],32:[function(_dereq_,module,exports){
+},{"../type":24}],34:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4760,7 +4802,7 @@ module.exports = new Type('tag:yaml.org,2002:null', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":22}],33:[function(_dereq_,module,exports){
+},{"../type":24}],35:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4809,7 +4851,7 @@ module.exports = new Type('tag:yaml.org,2002:omap', {
   resolve: resolveYamlOmap
 });
 
-},{"../type":22}],34:[function(_dereq_,module,exports){
+},{"../type":24}],36:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4864,7 +4906,7 @@ module.exports = new Type('tag:yaml.org,2002:pairs', {
   construct: constructYamlPairs
 });
 
-},{"../type":22}],35:[function(_dereq_,module,exports){
+},{"../type":24}],37:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4873,7 +4915,7 @@ module.exports = new Type('tag:yaml.org,2002:seq', {
   kind: 'sequence'
 });
 
-},{"../type":22}],36:[function(_dereq_,module,exports){
+},{"../type":24}],38:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4899,7 +4941,7 @@ module.exports = new Type('tag:yaml.org,2002:set', {
   resolve: resolveYamlSet
 });
 
-},{"../type":22}],37:[function(_dereq_,module,exports){
+},{"../type":24}],39:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -4908,7 +4950,7 @@ module.exports = new Type('tag:yaml.org,2002:str', {
   kind: 'scalar'
 });
 
-},{"../type":22}],38:[function(_dereq_,module,exports){
+},{"../type":24}],40:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -5004,7 +5046,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   represent: representYamlTimestamp
 });
 
-},{"../type":22}],39:[function(_dereq_,module,exports){
+},{"../type":24}],41:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2012 Mathias Bynens <mathias@qiwi.be>
@@ -8914,7 +8956,7 @@ parseStatement: true, parseSourceElement: true */
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],40:[function(_dereq_,module,exports){
+},{}],42:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -9578,7 +9620,7 @@ validators.not = validators.disallow = function validateNot (instance, schema, o
 
 module.exports = attribute;
 
-},{"./helpers":41}],41:[function(_dereq_,module,exports){
+},{"./helpers":43}],43:[function(_dereq_,module,exports){
 'use strict';
 
 var uri = _dereq_('url');
@@ -9842,7 +9884,7 @@ exports.encodePath = function encodePointer(a){
 	return a.map(function(v){ return '/'+encodeURIComponent(v).replace(/~/g,'%7E'); }).join('');
 }
 
-},{"url":8}],42:[function(_dereq_,module,exports){
+},{"url":10}],44:[function(_dereq_,module,exports){
 'use strict';
 
 var Validator = module.exports.Validator = _dereq_('./validator');
@@ -9856,7 +9898,7 @@ module.exports.validate = function (instance, schema, options) {
   return v.validate(instance, schema, options);
 };
 
-},{"./helpers":41,"./validator":43}],43:[function(_dereq_,module,exports){
+},{"./helpers":43,"./validator":45}],45:[function(_dereq_,module,exports){
 'use strict';
 
 var urilib = _dereq_('url');
@@ -10172,7 +10214,7 @@ types.object = function testObject (instance) {
 
 module.exports = Validator;
 
-},{"./attribute":40,"./helpers":41,"url":8}],44:[function(_dereq_,module,exports){
+},{"./attribute":42,"./helpers":43,"url":10}],46:[function(_dereq_,module,exports){
 (function (global){
 /**
  * @license

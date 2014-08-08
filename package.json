@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test/*.spec.coffee",
-    "build": "node_modules/.bin/browserify -s guides-parser -o build/guides-parser.js -t brfs -e index.js"
+    "test-browser": "./node_modules/karma/bin/karma start --single-run",
+    "build": "./node_modules/.bin/browserify -s guides-parser -o build/guides-parser.js -t brfs -e index.js",
+    "hint": "./node_modules/.bin/jshint -c .jshintrc index.js lib/*.js"
   },
   "author": "Codio",
   "license": "MIT",
@@ -18,6 +20,7 @@
     "chai": "^1.9.1",
     "coffee-script": "^1.7.1",
     "coffeeify": "^0.7.0",
+    "jshint": "^2.5.2",
     "karma": "^0.12.21",
     "karma-browserify": "^0.2.1",
     "karma-chrome-launcher": "^0.1.4",
