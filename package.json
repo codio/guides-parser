@@ -9,7 +9,7 @@
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test/*.spec.coffee",
     "test-browser": "./node_modules/karma/bin/karma start --single-run",
-    "build": "./node_modules/.bin/browserify -s guides-parser -o build/guides-parser.js -t brfs -e index.js",
+    "build": "./node_modules/.bin/browserify -s guides-parser -o build/guides-parser.js -t brfs -e index.js -x esprima",
     "hint": "./node_modules/.bin/jshint -c .jshintrc index.js lib/*.js"
   },
   "author": "Codio",
@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "js-yaml": "^3.1.0",
-    "jsonschema": "^1.0.0",
-    "lodash": "^2.4.1"
+    "jsonschema": "^1.0.0"
   }
 }

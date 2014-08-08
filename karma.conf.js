@@ -14,7 +14,8 @@ module.exports = function(config) {
     },
     browserify: {
         extensions: ['.coffee'],
-        transform: ['coffeeify', 'brfs']
+        transform: ['coffeeify', 'brfs'],
+        external: ['esprima']
     },
     reporters: ['dots'],
     port: 9876,
