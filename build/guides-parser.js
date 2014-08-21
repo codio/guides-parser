@@ -80,11 +80,15 @@ function parse (input, filename) {
     return result;
 }
 
+function serialize(input, options) {
+    return yaml.safeDump(input, options);
+}
 
 // Export
 // ------
 
 exports.parse = parse;
+exports.serialize = serialize;
 
 },{"./extractor":2,"./validator":4,"js-yaml":12}],4:[function(_dereq_,module,exports){
 // Validator
