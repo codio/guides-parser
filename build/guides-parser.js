@@ -107,7 +107,7 @@ var validator = new Validator();
 var schemas = {
     config: JSON.parse("{\n    \"id\": \"/config\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"title\": { \"$ref\": \"/title\", \"required\": true },\n        \"files\": { \"$ref\": \"/files\" },\n        \"editable\": { \"$ref\": \"/editable\" },\n        \"layout\": { \"$ref\": \"/layout\" }\n    }\n}\n"),
     title: JSON.parse("{\n    \"id\": \"/title\",\n    \"type\": \"string\"\n}\n"),
-    file: JSON.parse("{\n    \"id\": \"/file\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"path\": { \"type\": \"string\", \"required\": true },\n        \"panel\": { \"type\": \"number\" },\n        \"ref\": { \"type\": \"number\" },\n        \"lineCount\": { \"type\": \"number\" }\n    }\n}\n"),
+    file: JSON.parse("{\n    \"id\": \"/file\",\n    \"type\": \"object\",\n    \"properties\": {\n        \"path\": { \"type\": \"string\", \"required\": true },\n        \"panel\": { \"type\": \"number\" },\n        \"ref\": { \"type\": \"string\" },\n        \"lineCount\": { \"type\": \"number\" }\n    }\n}\n"),
     files: JSON.parse("{\n    \"id\": \"/files\",\n    \"type\": \"array\",\n    \"items\": {\n        \"$ref\": \"/file\"\n    }\n}\n"),
     layout: JSON.parse("{\n    \"id\": \"/layout\",\n    \"type\": \"string\"\n}\n"),
     editable: JSON.parse("{\n    \"id\": \"/editable\",\n    \"type\": \"boolean\"\n}\n")

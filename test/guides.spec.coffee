@@ -47,7 +47,7 @@ describe 'guides parser', ->
         files:
           - panel: 3
             path: 'some/path.js'
-            ref: 22
+            ref: "22"
             lineCount: 1
         ---
         My content
@@ -58,7 +58,7 @@ describe 'guides parser', ->
             files: [
               panel: 3,
               path: 'some/path.js',
-              ref: 22,
+              ref: "22",
               lineCount: 1
             ],
             title: 'My title'
@@ -72,7 +72,7 @@ describe 'guides parser', ->
         title: My title
         files:
           - panel: 3
-            ref: 22
+            ref: "22"
             lineCount: 1
         ---
         My content
