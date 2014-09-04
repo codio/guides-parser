@@ -5,6 +5,7 @@
         "path": { "type": "string", "required": true },
         "panel": { "type": "number" },
         "ref": { "type": "string" },
-        "lineCount": { "type": "number" }
+        "lineCount": { "type": "number" },
+        "action": {"type": "string"}
     }
 }
