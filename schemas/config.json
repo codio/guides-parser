@@ -5,6 +5,7 @@
         "title": { "$ref": "/title", "required": true },
         "files": { "$ref": "/files" },
         "editable": { "$ref": "/editable" },
-        "layout": { "$ref": "/layout" }
+        "layout": { "$ref": "/layout" },
+        "step": { "$ref": "/step" }
     }
 }
